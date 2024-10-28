@@ -1,5 +1,6 @@
 import { connectDB } from "@/lib/db/connectDB";
 import { SubCategoryModal } from "@/lib/models/Subcategories";
+import { CategoryModal } from "@/lib/models/Category";
 
 export async function GET(request) {
   await connectDB();
@@ -9,11 +10,12 @@ export async function GET(request) {
   if (searchParams.get("category")) {
     query.category = searchParams.get("category");
   }
-
+  console.log("query=>", query);
   const subCategories = await SubCategoryModal.find(query).populate(
     "category",
     "title"
   );
+
   return Response.json(
     {
       msg: "Subcategories Fetched Successfully",
@@ -31,7 +33,7 @@ export async function POST(request) {
 
   return Response.json(
     {
-      msg: "SubCategory Added Successfully ",
+      msg: "SubCategory Added Successfully",
       newSubCategory: newSubCategory,
     },
     { status: 201 }

@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const subcategorySchema = new Schema({
-  title: String,
+  title: { type: String, required: true },
   description: String,
-  thumbnail: String,
+  thumbnail: { type: String, required: true },
   category: {
     type: mongoose.Types.ObjectId,
     ref: "Categories",
