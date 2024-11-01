@@ -1,14 +1,15 @@
 "use server";
 
-export async function uploadImage(formInfo) {
+export async function uploadImage(categoryForm) {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
   const timestamp = Math.floor(Date.now() / 1000);
   const signature = generateSignature(timestamp, apiSecret);
 
   const formData = new FormData();
-  formData.append("file", formInfo.get("image"));
+  formData.append("file", categoryForm.get('thumbnail'));
 
   formData.append("api_key", apiKey);
   formData.append("timestamp", timestamp);
