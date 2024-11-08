@@ -1,3 +1,5 @@
+import { getEvents } from "@/actions/events";
+import AddEventForm from "@/components/AddEventSheet/AddEventSheet";
 import {
   Table,
   TableBody,
@@ -8,31 +10,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
+import { auth } from "../../../../../auth";
+import { getCategories } from "@/actions/categories";
 
-const events = [
-  {
-    title: "Birthday Event",
-    description: "Birthday of Baby Girl",
-    location: "Karachi",
-    thumbnail:
-      "https://images.unsplash.com/flagged/photo-1553056011-7811272649cb?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmlydGhkYXklMjBiYWJ5JTIwZ2lybHxlbnwwfHwwfHx8MA%3D%3D",
-    date: new Date().toLocaleDateString(),
-  },
-  {
-    title: "Cycling Marathon",
-    description: "All Community Members will be have cycling Race",
-    location: "Karachi",
-    thumbnail:
-      "https://images.unsplash.com/photo-1470920456752-d50214d7ed59?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Y3ljbGluZ3xlbnwwfHwwfHx8MA%3D%3D",
-    date: new Date().toLocaleDateString(),
-  },
-];
-
-export default function Events() {
+export default async function Events() {
+  const events = await getEvents();
+  const { categories } = await getCategories();
+  const session = await auth();
   return (
     <div className="min-h-screen mx-10">
       <div className="flex justify-between items-center my-4">
         <h1 className="font-bold text-xl">Events</h1>
+        <AddEventForm session={session} categories={categories} />
       </div>
       <Table>
         <TableCaption>A list of your recent events.</TableCaption>
@@ -46,8 +35,8 @@ export default function Events() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {events.map((event) => (
-            <TableRow key={event.title}>
+          {events?.events?.map((event) => (
+            <TableRow key={event._id}>
               <TableCell className="text-right">
                 <Image
                   src={event.thumbnail}
@@ -58,8 +47,8 @@ export default function Events() {
               </TableCell>
               <TableCell className="font-medium">{event.title}</TableCell>
               <TableCell>{event.description}</TableCell>
-              <TableCell>{event.location}</TableCell>
-              <TableCell>{event.date}</TableCell>
+              <TableCell>{event.address}</TableCell>
+              <TableCell>{event.startDate}</TableCell>
             </TableRow>
           ))}
         </TableBody>

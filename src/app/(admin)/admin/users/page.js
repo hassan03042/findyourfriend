@@ -1,3 +1,4 @@
+import { getUsers } from "@/actions/users";
 import {
   Table,
   TableBody,
@@ -9,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const users = [
   {
@@ -37,10 +39,11 @@ const users = [
   },
 ];
 
-export default function Users() {
+export default async function Users() {
+  const users = await getUsers();
   return (
     <div className="min-h-screen mx-10">
-        <div className="flex justify-between items-center my-4">
+      <div className="flex justify-between items-center my-4">
         <h1 className="font-bold text-xl">Users</h1>
       </div>
       <Table>
@@ -55,15 +58,19 @@ export default function Users() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.fullname}>
+          {users?.users?.map((user) => (
+            <TableRow key={user._id}>
               <TableCell className="text-right">
-                <Image
+                <Avatar>
+                  <AvatarImage height={40} width={40} src={user.profileImg} />
+                  <AvatarFallback>-</AvatarFallback>
+                </Avatar>
+                {/* <Image
                   src={user.profileImage}
                   style={{ objectFit: "cover" }}
                   height={40}
                   width={40}
-                />
+                /> */}
               </TableCell>
               <TableCell className="font-medium">{user.fullname}</TableCell>
               <TableCell>{user.email}</TableCell>
