@@ -1,23 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarIcon, MapPinIcon } from "lucide-react";
 import UpcomingEvents from "@/components/UpcomingEvents/UpcomingEvents";
 import { auth } from "../../auth";
 import { getEvents } from "@/actions/events";
 import { getCategories } from "@/actions/categories";
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }) {
+  console.log("searchparams=>", searchParams);
+  const { category } = searchParams;
   const session = await auth();
-  const { events } = await getEvents();
+  const { events } = await getEvents(category);
   const { categories } = await getCategories();
   return (
     <div className="min-h-screen bg-background">
@@ -39,6 +31,7 @@ export default async function HomePage() {
       </header>
 
       <UpcomingEvents
+        chosenCategory={category}
         events={events}
         session={session}
         categories={categories}

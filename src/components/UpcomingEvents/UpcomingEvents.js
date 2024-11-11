@@ -14,6 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
 import AddEventForm from "../AddEventSheet/AddEventSheet";
 import Link from "next/link";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { SearchDropdown } from "../SearchDropdown/SearchDropdown";
 
 // Placeholder data
 
@@ -21,35 +23,56 @@ export default function UpcomingEvents({
   session,
   categories = [],
   events = [],
+  chosenCategory,
 }) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const handleSelectCategory = (id) => {
+    const params = new URLSearchParams(searchParams);
+    if (id) {
+      params.set("category", id);
+    } else {
+      params.delete("category");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  };
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto py-12">
         <div className="flex justify-between">
           <h2 className="text-3xl font-bold mb-8">Upcoming Events</h2>
-          {session ? (
-            <AddEventForm session={session} categories={categories} />
-          ) : (
-            <Link href={"/signin"}>
-              <Button>Login to Add Event</Button>
-            </Link>
-          )}
+          <div className="flex gap-4">
+            <SearchDropdown
+              categories={categories}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            {session ? (
+              <AddEventForm session={session} categories={categories} />
+            ) : (
+              <Link href={"/signin"}>
+                <Button>Login to Add Event</Button>
+              </Link>
+            )}
+          </div>
         </div>
 
-        <Tabs defaultValue="All" className="mb-8">
+        {/* <Tabs  defaultValue="All" className="mb-8">
           <TabsList>
             {categories.map((category) => (
               <TabsTrigger
-                className=" gap-5"
-                key={category}
+                className="gap-5"
+                key={category._id}
                 value={category}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => handleSelectCategory(category)}
               >
                 {category.title}
               </TabsTrigger>
             ))}
           </TabsList>
-        </Tabs>
+        </Tabs> */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((event) => (
