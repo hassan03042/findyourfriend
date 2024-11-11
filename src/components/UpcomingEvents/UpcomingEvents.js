@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
 import AddEventForm from "../AddEventSheet/AddEventSheet";
 import Link from "next/link";
@@ -108,7 +107,9 @@ export default function UpcomingEvents({
                   />
                   <span className="text-sm">{event.createdBy.fullname}</span>
                 </div>
-                <Button>View Details</Button>
+                <Link href={`/event/${event._id}`}>
+                  <Button>View Details</Button>
+                </Link>
               </CardFooter>
             </Card>
           ))}
