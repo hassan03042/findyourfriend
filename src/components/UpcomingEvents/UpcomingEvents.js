@@ -12,26 +12,35 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
+import AddEventForm from "../AddEventSheet/AddEventSheet";
+import Link from "next/link";
 
 // Placeholder data
 
-export default function UpcomingEvents({ categories = [], events = [] }) {
-  const [selectedCategory, setSelectedCategory] = useState("All");
-
-  const filteredEvents =
-    selectedCategory === "All"
-      ? events
-      : events.filter((event) => event.category === selectedCategory);
-
+export default function UpcomingEvents({
+  session,
+  categories = [],
+  events = [],
+}) {
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto py-12">
-        <h2 className="text-3xl font-bold mb-8">Upcoming Events</h2>
+        <div className="flex justify-between">
+          <h2 className="text-3xl font-bold mb-8">Upcoming Events</h2>
+          {session ? (
+            <AddEventForm session={session} categories={categories} />
+          ) : (
+            <Link href={"/signin"}>
+              <Button>Login to Add Event</Button>
+            </Link>
+          )}
+        </div>
 
         <Tabs defaultValue="All" className="mb-8">
           <TabsList>
             {categories.map((category) => (
               <TabsTrigger
+                className=" gap-5"
                 key={category}
                 value={category}
                 onClick={() => setSelectedCategory(category)}
@@ -43,7 +52,7 @@ export default function UpcomingEvents({ categories = [], events = [] }) {
         </Tabs>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map((event) => (
+          {events.map((event) => (
             <Card key={event._id}>
               <CardHeader>
                 <CardTitle>{event.title}</CardTitle>

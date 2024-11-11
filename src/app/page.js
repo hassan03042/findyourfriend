@@ -38,7 +38,11 @@ export default async function HomePage() {
         </div>
       </header>
 
-      <UpcomingEvents events={events} categories={categories} />
+      <UpcomingEvents
+        events={events}
+        session={session}
+        categories={categories}
+      />
     </div>
   );
 }
