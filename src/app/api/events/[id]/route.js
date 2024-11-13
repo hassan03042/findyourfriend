@@ -6,10 +6,11 @@ import { UserModal } from "@/lib/models/User";
 
 export async function GET(request, { params }) {
   await connectDB();
-  const event = await EventModal.findOne({ _id: params.id })
+  let event = await EventModal.findOne({ _id: params.id })
     .populate("category", "title")
     .populate("createdBy", "fullname email profileImg")
-    .populate("subcategory", "title");
+    .populate("subcategory", "title")
+    .populate("going", "fullname email profileImg"); // Populate going field
 
   return Response.json(
     {

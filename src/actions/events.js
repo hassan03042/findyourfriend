@@ -26,13 +26,30 @@ export const getEvents = async (category) => {
 };
 
 export const getSingleEvent = async (id) => {
-  let event = await fetch(`${process.env.BASE_URL}api/events/${id}`);
-  if(event.ok){
+  let event = await fetch(`${process.env.BASE_URL}api/events/${id}`, {
+    cache: "no-cache",
+  });
+  if (event.ok) {
     event = await event.json();
     console.log("Event Fetched successfully");
     return event;
-  }else{
-    redirect('/not-found')
+  } else {
+    redirect("/not-found");
   }
   revalidatePath("/admin/categories");
+};
+
+export const goingToEvent = async (id, userId) => {
+  let event = await fetch(`${process.env.BASE_URL}api/events/${id}/going`, {
+    method: "POST",
+    body: JSON.stringify({ userId }),
+  });
+  if (event.ok) {
+    revalidatePath(`/events/${id}`);
+    // const res = await event.json();
+    // console.log("Event Updated successfully");
+    // return res;
+  } else {
+    redirect("/not-found");
+  }
 };
