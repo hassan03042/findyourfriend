@@ -81,7 +81,7 @@ export default async function EventDetailsPage({ params }) {
         </CardContent>
         <CardFooter>
           <Button className="w-full">
-            <UserIcon className="mr-2 h-4 w-4" /> RSVP to Event
+            <UserIcon className="mr-2 h-4 w-4" /> Going to Event
           </Button>
         </CardFooter>
       </Card>

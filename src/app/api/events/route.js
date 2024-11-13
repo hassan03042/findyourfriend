@@ -6,17 +6,18 @@ import { UserModal } from "@/lib/models/User";
 
 export async function GET(request) {
   await connectDB();
-  const reqUrl = request.url;
-  const { searchParams } = new URL(reqUrl);
+
+  const category = request?.nextUrl?.searchParams?.get("category");
   const query = {};
-  if (searchParams.get("category")) {
-    query.category = searchParams.get("category");
+  if (category) {
+    query.category = category;
   }
   console.log("query=>", query);
   const events = await EventModal.find(query)
     .populate("category", "title")
     .populate("createdBy", "fullname email profileImg")
-    .populate("subcategory", "title");
+    .populate("subcategory", "title")
+    .populate("going", "fullname email profileImg");
 
   return Response.json(
     {
