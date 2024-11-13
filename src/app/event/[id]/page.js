@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import UpcomingEvents from "@/components/UpcomingEvents/UpcomingEvents";
-// import { auth } from "../../auth";
 import { getEvents, getSingleEvent, goingToEvent } from "@/actions/events";
 import { getCategories } from "@/actions/categories";
 import { auth } from "../../../../auth";
@@ -27,6 +25,10 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { addComment, getComments } from "@/actions/comments";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
+
 export default async function EventDetailsPage({ params }) {
   const { event } = await getSingleEvent(params.id);
   const { comments } = await getComments(params.id);
@@ -104,7 +106,7 @@ export default async function EventDetailsPage({ params }) {
             </div>
           </div>
         </CardContent>
-        <CardFooter className ="flex flex-col">
+        <CardFooter className="flex flex-col">
           {session ? (
             <form
               action={async () => {
@@ -133,42 +135,61 @@ export default async function EventDetailsPage({ params }) {
               <Button className="w-full"> Login to participate in Event</Button>
             </Link>
           )}
-          <div className="flex flex-col">
-            <h1>Comments</h1>
-            <form
-              action={async (formData) => {
-                "use server";
-                await addComment({
-                  event: params.id,
-                  user: session.user._id,
-                  comment: formData.get("comment"),
-                });
-              }}
-            >
-              <div className="flex ">
-                <Input
-                  className="flex flex-grow"
-                  name="comment"
-                  placeholder="Comment"
-                />
-                <Button type="submit">Add</Button>
+          {session && (
+            <div className="w-full space-y-4">
+              <h2 className="text-xl font-semibold">Comments</h2>
+              <form
+                action={async (formData) => {
+                  "use server";
+                  await addComment({
+                    event: params.id,
+                    user: session.user._id,
+                    comment: formData.get("comment"),
+                  });
+                }}
+                className="space-y-2"
+              >
+                <div className="flex space-x-2">
+                  <Input
+                    className="flex-grow"
+                    name="comment"
+                    placeholder="Add a comment..."
+                  />
+                  <Button type="submit">Post</Button>
+                </div>
+              </form>
+              <div className="space-y-4">
+                {comments && comments.length > 0 ? (
+                  comments.map((comment) => (
+                    <div
+                      key={comment._id}
+                      className="flex items-start space-x-3 bg-muted p-3 rounded-lg"
+                    >
+                      <Avatar title={comment.user.fullname}>
+                        <AvatarImage src={comment.user.profileImg} />
+                        <AvatarFallback>
+                          {comment.user.fullname.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="font-semibold">{comment.user.fullname}</p>
+                        <p className="text-md font-semibold text-muted-foreground mt-1">
+                          {comment.comment}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {dayjs().from(dayjs(comment.createdAt))}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-muted-foreground">
+                    No comments yet. Be the first to comment!
+                  </p>
+                )}
               </div>
-            </form>
-
-            {comments
-              ? comments.map((comment) => (
-                  <div className="" key={comment._id}>
-                    <Avatar key={comment.user._id} title={comment.user.fullname}>
-                      <AvatarImage src={comment.user.profileImg} />
-                      <AvatarFallback>
-                        {comment.user.fullname.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <h1 className="font-bold">{comment.comment}</h1>
-                  </div>
-                ))
-              : null}
-          </div>
+            </div>
+          )}
         </CardFooter>
       </Card>
     </div>
