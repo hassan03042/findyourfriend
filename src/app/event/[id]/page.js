@@ -26,6 +26,7 @@ import {
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { addComment } from "@/actions/comments";
 export default async function EventDetailsPage({ params }) {
   const { event } = await getSingleEvent(params.id);
   if (!event) redirect("not-found");
@@ -131,6 +132,27 @@ export default async function EventDetailsPage({ params }) {
               <Button className="w-full"> Login to participate in Event</Button>
             </Link>
           )}
+
+          <h1>Comments</h1>
+          <form
+            action={async (formData) => {
+              "use server";
+              await addComment({
+                event: params.id,
+                user: session.user._id,
+                comment: formData.get("comment"),
+              });
+            }}
+          >
+            <div className="flex ">
+              <Input
+                className="flex flex-grow"
+                name="comment"
+                placeholder="Comment"
+              />
+              <Button type="submit">Add</Button>
+            </div>
+          </form>
         </CardFooter>
       </Card>
     </div>
