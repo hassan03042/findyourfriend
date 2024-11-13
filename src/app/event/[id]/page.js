@@ -26,9 +26,10 @@ import {
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { addComment } from "@/actions/comments";
+import { addComment, getComments } from "@/actions/comments";
 export default async function EventDetailsPage({ params }) {
   const { event } = await getSingleEvent(params.id);
+  const { comments } = await getComments(params.id);
   if (!event) redirect("not-found");
   const session = await auth();
 
@@ -103,7 +104,7 @@ export default async function EventDetailsPage({ params }) {
             </div>
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className ="flex flex-col">
           {session ? (
             <form
               action={async () => {
@@ -118,7 +119,7 @@ export default async function EventDetailsPage({ params }) {
                   </span>
                 </Button>
               ) : (
-                <Button type="submit" className="w-full bg-lime-100">
+                <Button type="submit" className="w-full">
                   <span className="flex">
                     <UserIcon className="mr-2 h-4 w-4" /> Want to Go
                   </span>
@@ -132,27 +133,42 @@ export default async function EventDetailsPage({ params }) {
               <Button className="w-full"> Login to participate in Event</Button>
             </Link>
           )}
+          <div className="flex flex-col">
+            <h1>Comments</h1>
+            <form
+              action={async (formData) => {
+                "use server";
+                await addComment({
+                  event: params.id,
+                  user: session.user._id,
+                  comment: formData.get("comment"),
+                });
+              }}
+            >
+              <div className="flex ">
+                <Input
+                  className="flex flex-grow"
+                  name="comment"
+                  placeholder="Comment"
+                />
+                <Button type="submit">Add</Button>
+              </div>
+            </form>
 
-          <h1>Comments</h1>
-          <form
-            action={async (formData) => {
-              "use server";
-              await addComment({
-                event: params.id,
-                user: session.user._id,
-                comment: formData.get("comment"),
-              });
-            }}
-          >
-            <div className="flex ">
-              <Input
-                className="flex flex-grow"
-                name="comment"
-                placeholder="Comment"
-              />
-              <Button type="submit">Add</Button>
-            </div>
-          </form>
+            {comments
+              ? comments.map((comment) => (
+                  <div className="" key={comment._id}>
+                    <Avatar key={comment.user._id} title={comment.user.fullname}>
+                      <AvatarImage src={comment.user.profileImg} />
+                      <AvatarFallback>
+                        {comment.user.fullname.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <h1 className="font-bold">{comment.comment}</h1>
+                  </div>
+                ))
+              : null}
+          </div>
         </CardFooter>
       </Card>
     </div>
