@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getEvents, getSingleEvent, goingToEvent } from "@/actions/events";
-import { getCategories } from "@/actions/categories";
+import { getSingleEvent, goingToEvent } from "@/actions/events";
 import { auth } from "../../../../auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
